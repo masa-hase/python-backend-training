@@ -70,6 +70,10 @@ TDD（Test Driven Development）の Red-Green-Refactor サイクルを実践し�
 
 まず簡単な例でTDDサイクルを体験します。
 
+> **pytestの実行方法について**
+> このプロジェクトでは必ず `uv run pytest` を使用してください。
+> 詳細な実行方法とTDDでの活用法は [pytestガイド](../pytest-guide.md#tddサイクルでの活用) を参照してください。
+
 **tests/test_tdd_practice.py**
 ```python
 """
@@ -100,7 +104,10 @@ class TestCalculator:
 
 **TDD手順**:
 1. **Red**: 上記テストを実行 → インポートエラーで失敗
-2. **Green**: `src/calculator.py` を作成して最小限の実装
+   ```bash
+   uv run pytest tests/phase3/test_tdd_practice.py::TestCalculator::test_add_two_numbers -v
+   ```
+2. **Green**: `src/phase3/calculator.py` を作成して最小限の実装
 3. **Refactor**: コードを整理
 
 #### 1.2 実装例（学習者が参考にできるよう）
@@ -595,3 +602,49 @@ def test_filter_logs_by_error_level():
 - テストが通る状態を保ちながら改善
 - 重複コードの除去
 - 可読性の向上
+
+## 🛠️ TDD実践でのpytest活用
+
+### 基本的な実行フロー
+
+```bash
+# 1. Red Phase: 新しいテストを書いて失敗を確認
+uv run pytest tests/phase3/test_new_feature.py -v
+
+# 2. 失敗の詳細を確認（変数の値など）
+uv run pytest tests/phase3/test_new_feature.py -vv
+
+# 3. Green Phase: 実装後、テストが通ることを確認
+uv run pytest tests/phase3/test_new_feature.py -v
+
+# 4. Refactor Phase: すべてのテストが通り続けることを確認
+uv run pytest tests/phase3/ -v
+```
+
+### TDD実践での便利なオプション
+
+```bash
+# 最初の失敗で停止（Red Phaseで原因特定）
+uv run pytest -x
+
+# 前回失敗したテストのみ実行（効率的なGreen Phase）
+uv run pytest --lf
+
+# ファイル変更を監視して自動実行（pytest-watchプラグイン使用時）
+uv run ptw tests/phase3/
+
+# カバレッジを確認（実装の網羅性チェック）
+uv run pytest tests/phase3/ --cov=src/phase3 --cov-report=html
+```
+
+### デバッグ支援
+
+```bash
+# pdbデバッガーを起動（実装が難しい時）
+uv run pytest --pdb
+
+# print文の出力を表示（デバッグ用）
+uv run pytest -s
+```
+
+詳細は [pytestガイド](../pytest-guide.md) を参照してください。

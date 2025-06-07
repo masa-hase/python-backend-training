@@ -38,6 +38,12 @@ python-backend-training/
 │   ├── phase4/
 │   └── phase5/
 ├── docs/             # 学習ドキュメント
+│   ├── pytest-guide.md   # pytest実行ガイド
+│   ├── phase-1/
+│   ├── phase-2/
+│   ├── phase-3/
+│   ├── phase-4/
+│   └── phase-5/
 └── README.md         # このファイル
 ```
 
@@ -118,7 +124,7 @@ python-backend-training/
 ### 推奨ツール
 - エディタ: VS Code（devcontainer使用）
 - Python環境: uv
-- テストフレームワーク: pytest
+- テストフレームワーク: pytest（[実行ガイド](docs/pytest-guide.md)）
 - Webフレームワーク: FastAPI
 
 ## 🚀 始め方
@@ -127,7 +133,8 @@ python-backend-training/
 2. 作業ブランチを作成: `git checkout -b develop_[あなたの名前]`
 3. devcontainerで開発環境を起動
 4. 依存関係をインストール: `uv sync`
-5. `docs/phase-1/README.md` を読んで Phase 1 を開始
+5. pytestの動作確認: `uv run pytest --version`
+6. `docs/phase-1/README.md` を読んで Phase 1 を開始
 
 ### Phase毎の学習方法
 - **Phase 1**: `src/phase1/`で CLI アプリ開発

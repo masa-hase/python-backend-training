@@ -48,11 +48,14 @@ Phase 1では「とりあえず動くもの」を作りましたが、以下の�
 #### 1.1 pytest のインストール確認
 ```bash
 # pytest がインストール済みか確認
-python -m pytest --version
+uv run pytest --version
 
 # テストの実行
-python -m pytest tests/ -v
+uv run pytest tests/ -v
 ```
+
+> **重要**: このプロジェクトでは必ず `uv run pytest` を使用してください。
+> 詳細な実行方法は [pytestガイド](../pytest-guide.md) を参照してください。
 
 #### 1.2 最初のテスト作成
 
@@ -73,7 +76,7 @@ def test_string_operations():
 **練習1**: 上記のテストファイルを作成し、実行してみてください。
 
 ```bash
-python -m pytest tests/test_basic.py -v
+uv run pytest tests/phase2/test_basic.py -v
 ```
 
 #### 1.3 アサーションの種類
@@ -363,16 +366,16 @@ def temp_csv_file():
 
 ```bash
 # すべてのテストを実行
-python -m pytest
+uv run pytest
 
 # 詳細な出力で実行
-python -m pytest -v
+uv run pytest -v
 
 # 特定のテストファイルのみ実行
-python -m pytest tests/test_log_parser.py -v
+uv run pytest tests/phase2/test_log_parser.py -v
 
 # カバレッジ付きで実行
-python -m pytest --cov=src --cov-report=html
+uv run pytest --cov=src --cov-report=html
 ```
 
 #### 4.2 テスト結果の分析
@@ -435,7 +438,7 @@ Phase 2 完了時に以下のテストが実装されていることを確認し
 - [ ] テストの実行時間が適切（全体で30秒以内）
 
 ### テスト実行
-- [ ] `python -m pytest` でエラーなく実行できる
+- [ ] `uv run pytest` でエラーなく実行できる
 - [ ] カバレッジが70%以上ある
 - [ ] 継続的にテストを実行する習慣ができている
 
@@ -474,6 +477,7 @@ Phase 2で「後からテストを書く大変さ」を体験したので、Phas
 
 ## 📚 参考資料
 
+- [プロジェクト内pytestガイド](../pytest-guide.md) - 本プロジェクト専用のpytest実行ガイド
 - [pytest公式ドキュメント](https://docs.pytest.org/)
 - [Python Testing 101](https://python-testing-101.readthedocs.io/)
 - [Effective Python Testing](https://testdriven.io/)
