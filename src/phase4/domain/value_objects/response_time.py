@@ -20,26 +20,30 @@ class ResponseTime:
     
     def __post_init__(self):
         """バリデーション"""
-        # TODO: TDDで実装してください
-        pass
+        if self.milliseconds < 0:
+            raise ValueError("レスポンス時間は0以上である必要があります")
+        if self.milliseconds > 60000:  # 60秒以上は異常
+            raise ValueError("レスポンス時間が異常に長いです")
     
     def is_fast(self) -> bool:
         """高速なレスポンスか判定"""
-        # TODO: TDDで実装してください
-        pass
+        return self.milliseconds < self.FAST_THRESHOLD_MS
     
     def is_slow(self) -> bool:
         """低速なレスポンスか判定"""
-        # TODO: TDDで実装してください
-        pass
+        return self.milliseconds >= self.SLOW_THRESHOLD_MS
     
     def to_seconds(self) -> float:
         """秒単位に変換"""
-        # TODO: TDDで実装してください
-        pass
+        return self.milliseconds / 1000.0
     
     def get_performance_category(self) -> str:
         """パフォーマンスカテゴリ取得"""
-        # TODO: TDDで実装してください
-        # "fast", "normal", "slow", "very_slow"
-        pass
+        if self.milliseconds < self.FAST_THRESHOLD_MS:
+            return "fast"
+        elif self.milliseconds < self.SLOW_THRESHOLD_MS:
+            return "normal"
+        elif self.milliseconds < 5000:
+            return "slow"
+        else:
+            return "very_slow"

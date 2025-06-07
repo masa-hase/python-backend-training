@@ -27,26 +27,87 @@ class UploadLogFileUseCase:
     
     async def execute(self, dto: UploadLogFileDto) -> UploadLogFileResultDto:
         """ログファイルアップロードを実行"""
-        # TODO: TDDで実装してください
-        
-        # 1. バリデーション
-        #    - ファイル名の検証
-        #    - ファイルサイズの検証
-        #    - 重複チェック
-        
-        # 2. ドメインオブジェクトの作成
-        #    - FileName バリューオブジェクト作成
-        #    - FileSize バリューオブジェクト作成
-        #    - LogFile エンティティ作成
-        
-        # 3. ビジネスルールの適用
-        #    - アップロード可能かチェック
-        #    - ユーザーの容量制限チェック
-        
-        # 4. 永続化
-        #    - ファイルの保存
-        #    - メタデータの保存
-        
-        # 5. 結果の返却
-        
-        pass
+        try:
+            # 1. バリデーション
+            # ファイル名の検証（FileName作成時にバリデーション実行）
+            file_name = FileName(dto.file_name)
+            
+            # ファイルサイズの検証（FileSize作成時にバリデーション実行）
+            file_size = FileSize(dto.file_size)
+            
+            # 重複チェック
+            if await self._log_file_repository.exists_by_name_and_user(dto.file_name, dto.user_id):
+                return UploadLogFileResultDto(
+                    file_id=0,
+                    file_name=dto.file_name,
+                    file_size=dto.file_size,
+                    uploaded_at=datetime.now(),
+                    success=False,
+                    message="同名のファイルが既に存在します"
+                )
+            
+            # 2. ドメインオブジェクトの作成
+            log_file = LogFile(
+                id=None,  # IDは保存時に自動生成
+                file_name=file_name,
+                file_size=file_size,
+                uploaded_at=datetime.now(),
+                uploaded_by=dto.user_id
+            )
+            
+            # 3. ビジネスルールの適用
+            if not log_file.can_be_analyzed():
+                return UploadLogFileResultDto(
+                    file_id=0,
+                    file_name=dto.file_name,
+                    file_size=dto.file_size,
+                    uploaded_at=datetime.now(),
+                    success=False,
+                    message="ファイル形式またはサイズが解析に適していません"
+                )
+            
+            # ユーザーの容量制限チェック（例：100MB制限）
+            current_usage = await self._log_file_repository.get_total_size_by_user(dto.user_id)
+            max_usage = 100 * 1024 * 1024  # 100MB
+            
+            if current_usage + dto.file_size > max_usage:
+                return UploadLogFileResultDto(
+                    file_id=0,
+                    file_name=dto.file_name,
+                    file_size=dto.file_size,
+                    uploaded_at=datetime.now(),
+                    success=False,
+                    message="容量制限を超過しています"
+                )
+            
+            # 4. 永続化
+            saved_file = await self._log_file_repository.save(log_file)
+            
+            # 5. 結果の返却
+            return UploadLogFileResultDto(
+                file_id=saved_file.id,
+                file_name=saved_file.file_name.value,
+                file_size=saved_file.file_size.bytes,
+                uploaded_at=saved_file.uploaded_at,
+                success=True,
+                message="ファイルアップロードが完了しました"
+            )
+            
+        except ValueError as e:
+            return UploadLogFileResultDto(
+                file_id=0,
+                file_name=dto.file_name,
+                file_size=dto.file_size,
+                uploaded_at=datetime.now(),
+                success=False,
+                message=f"バリデーションエラー: {str(e)}"
+            )
+        except Exception as e:
+            return UploadLogFileResultDto(
+                file_id=0,
+                file_name=dto.file_name,
+                file_size=dto.file_size,
+                uploaded_at=datetime.now(),
+                success=False,
+                message=f"アップロードに失敗しました: {str(e)}"
+            )

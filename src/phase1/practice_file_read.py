@@ -19,8 +19,29 @@ def read_log_file(file_path: str) -> None:
     Args:
         file_path: 読み込むファイルのパス
     """
-    # TODO: ここに実装してください
-    pass
+    try:
+        print(f"ファイルを読み込み中: {file_path}")
+        
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            
+        print(f"総行数: {len(lines)}行")
+        print("最初の5行:")
+        print("-" * 50)
+        
+        for i, line in enumerate(lines[:5], 1):
+            print(f"{i:2d}: {line.rstrip()}")
+            
+        print("-" * 50)
+        
+    except FileNotFoundError:
+        print(f"エラー: ファイル '{file_path}' が見つかりません")
+    except PermissionError:
+        print(f"エラー: ファイル '{file_path}' の読み込み権限がありません")
+    except UnicodeDecodeError:
+        print(f"エラー: ファイル '{file_path}' の文字コードが正しくありません")
+    except Exception as e:
+        print(f"予期せぬエラーが発生しました: {e}")
 
 
 def main():

@@ -28,20 +28,38 @@ class LogFile:
     
     def __post_init__(self):
         """初期化後の処理"""
-        # TODO: バリデーション・ビジネスルールを実装してください
-        pass
+        # ビジネスルールのバリデーション
+        if self.uploaded_by <= 0:
+            raise ValueError("ユーザーIDは1以上である必要があります")
+        
+        # アップロード日時のバリデーション
+        if self.uploaded_at > datetime.now():
+            raise ValueError("アップロード日時は未来の日時にできません")
     
     def is_owned_by(self, user_id: int) -> bool:
         """指定されたユーザーの所有ファイルかチェック"""
-        # TODO: TDDで実装してください
-        pass
+        return self.uploaded_by == user_id
     
     def can_be_analyzed(self) -> bool:
         """解析可能かチェック（ファイルサイズ、形式など）"""
-        # TODO: TDDで実装してください
-        pass
+        # ファイルサイズのチェック
+        if not self.file_size.can_be_processed():
+            return False
+        
+        # ファイル形式のチェック
+        extension = self.file_name.get_extension()
+        return extension in {'.log', '.txt', '.csv'}
     
     def get_file_info(self) -> dict:
         """ファイル情報を取得"""
-        # TODO: TDDで実装してください
-        pass
+        return {
+            'id': self.id,
+            'file_name': self.file_name.value,
+            'file_size_bytes': self.file_size.bytes,
+            'file_size_display': str(self.file_size),
+            'uploaded_at': self.uploaded_at.isoformat(),
+            'uploaded_by': self.uploaded_by,
+            'is_log_file': self.file_name.is_log_file(),
+            'can_be_analyzed': self.can_be_analyzed(),
+            'file_extension': self.file_name.get_extension()
+        }

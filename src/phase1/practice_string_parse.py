@@ -23,8 +23,42 @@ def parse_log_line(line: str) -> Optional[Dict[str, str]]:
     Returns:
         解析したログデータの辞書、または解析に失敗した場合はNone
     """
-    # TODO: ここに実装してください
-    pass
+    try:
+        line = line.strip()
+        if not line:
+            return None
+            
+        parts = line.split()
+        if len(parts) < 6:
+            return None
+            
+        # 基本形式: "2024-01-15 09:23:45 INFO GET /api/users 200 45ms"
+        date = parts[0]
+        time = parts[1]
+        level = parts[2]
+        method = parts[3]
+        endpoint = parts[4]
+        status_code = parts[5]
+        response_time = parts[6] if len(parts) > 6 else "0ms"
+        
+        # メッセージ部分（エラーメッセージなど）
+        message = " ".join(parts[7:]) if len(parts) > 7 else ""
+        
+        return {
+            "date": date,
+            "time": time,
+            "datetime": f"{date} {time}",
+            "level": level,
+            "method": method,
+            "endpoint": endpoint,
+            "status_code": status_code,
+            "response_time": response_time,
+            "message": message,
+            "full_line": line
+        }
+        
+    except (IndexError, ValueError):
+        return None
 
 
 def parse_error_log_line(line: str) -> Optional[Dict[str, str]]:
@@ -38,8 +72,52 @@ def parse_error_log_line(line: str) -> Optional[Dict[str, str]]:
     Returns:
         解析したログデータの辞書、または解析に失敗した場合はNone
     """
-    # TODO: ここに実装してください
-    pass
+    try:
+        line = line.strip()
+        if not line:
+            return None
+            
+        # [ERROR]の位置を探す
+        if "[ERROR]" not in line:
+            return None
+            
+        # 日時部分とメッセージ部分を分離
+        parts = line.split("[ERROR]", 1)
+        if len(parts) != 2:
+            return None
+            
+        datetime_part = parts[0].strip()
+        message_part = parts[1].strip()
+        
+        # 日時を分離
+        datetime_parts = datetime_part.split()
+        if len(datetime_parts) < 2:
+            return None
+            
+        date = datetime_parts[0]
+        time = datetime_parts[1]
+        
+        # サービス名とエラーメッセージを分離
+        if ":" in message_part:
+            service_and_message = message_part.split(":", 1)
+            service = service_and_message[0].strip()
+            error_message = service_and_message[1].strip()
+        else:
+            service = "Unknown"
+            error_message = message_part
+        
+        return {
+            "date": date,
+            "time": time,
+            "datetime": f"{date} {time}",
+            "level": "ERROR",
+            "service": service,
+            "message": error_message,
+            "full_line": line
+        }
+        
+    except (IndexError, ValueError):
+        return None
 
 
 def analyze_sample_logs():

@@ -27,31 +27,35 @@ class Email:
     
     def __post_init__(self):
         """初期化後のバリデーション"""
-        # TODO: TDDでバリデーションを実装してください
-        # - 空文字チェック
-        # - 長さチェック
-        # - 正規表現チェック
-        # - 不正な場合はValueErrorを発生
-        pass
+        if not self.value:
+            raise ValueError("メールアドレスが空です")
+        
+        if len(self.value) > self.MAX_LENGTH:
+            raise ValueError(f"メールアドレスが長すぎます。最大{self.MAX_LENGTH}文字です")
+        
+        if not re.match(self.EMAIL_PATTERN, self.value):
+            raise ValueError("無効なメールアドレス形式です")
     
     def get_local_part(self) -> str:
         """ローカル部（@より前）を取得"""
-        # TODO: TDDで実装してください
-        pass
+        return self.value.split('@')[0]
     
     def get_domain_part(self) -> str:
         """ドメイン部（@より後）を取得"""
-        # TODO: TDDで実装してください
-        pass
+        return self.value.split('@')[1]
     
     def is_corporate_email(self) -> bool:
         """企業メールアドレスかどうか判定（Gmail等を除外）"""
-        # TODO: TDDで実装してください
-        # フリーメールのドメインリストと照合
-        pass
+        free_email_domains = {
+            'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+            'yahoo.co.jp', 'icloud.com', 'aol.com', 'live.com'
+        }
+        domain = self.get_domain_part().lower()
+        return domain not in free_email_domains
     
     @classmethod
     def is_valid_format(cls, email_string: str) -> bool:
         """メールアドレス形式が有効かチェック"""
-        # TODO: TDDで実装してください
-        pass
+        if not email_string or len(email_string) > cls.MAX_LENGTH:
+            return False
+        return bool(re.match(cls.EMAIL_PATTERN, email_string))

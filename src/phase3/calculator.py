@@ -15,20 +15,18 @@ class Calculator:
     
     def add(self, a: int, b: int) -> int:
         """足し算"""
-        # TODO: テストを通すために実装してください
-        pass
+        return a + b
     
     def subtract(self, a: int, b: int) -> int:
         """引き算"""
-        # TODO: TDDで実装してください
-        pass
+        return a - b
     
     def multiply(self, a: int, b: int) -> int:
         """掛け算"""
-        # TODO: TDDで実装してください
-        pass
+        return a * b
     
     def divide(self, a: int, b: int) -> float:
         """割り算"""
-        # TODO: TDDで実装してください（ゼロ除算の処理も含む）
-        pass
+        if b == 0:
+            raise ZeroDivisionError("Division by zero is not allowed")
+        return a / b

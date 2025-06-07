@@ -31,15 +31,56 @@ class LogFileController:
         current_user_id: int  # 認証から取得
     ) -> LogFileResponse:
         """ログファイルアップロード"""
-        # TODO: TDDで実装してください
-        
-        # 1. リクエスト検証
-        # 2. DTOへの変換
-        # 3. ユースケース実行
-        # 4. レスポンス変換
-        # 5. エラーハンドリング
-        
-        pass
+        try:
+            # 1. リクエスト検証
+            if not file.filename:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="ファイル名が指定されていません"
+                )
+            
+            # ファイル内容を読み込み
+            file_content = await file.read()
+            file_size = len(file_content)
+            
+            # 2. DTOへの変換
+            dto = UploadLogFileDto(
+                file_name=file.filename,
+                file_content=file_content,
+                file_size=file_size,
+                user_id=current_user_id,
+                content_type=file.content_type
+            )
+            
+            # 3. ユースケース実行
+            result = await self._upload_use_case.execute(dto)
+            
+            # 4. レスポンス変換
+            if not result.success:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=result.message
+                )
+            
+            return LogFileResponse(
+                id=result.file_id,
+                file_name=result.file_name,
+                file_size_bytes=result.file_size,
+                file_size_display=f"{result.file_size / 1024:.1f} KB" if result.file_size < 1024*1024 else f"{result.file_size / (1024*1024):.1f} MB",
+                uploaded_at=result.uploaded_at,
+                uploaded_by=current_user_id,
+                is_log_file=result.file_name.endswith('.log'),
+                can_be_analyzed=True,  # 成功したファイルは解析可能
+                file_extension=result.file_name.split('.')[-1] if '.' in result.file_name else ""
+            )
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"アップロードに失敗しました: {str(e)}"
+            )
     
     async def get_user_log_files(
         self,
@@ -59,10 +100,11 @@ class LogFileController:
         pass
 
 
-# 依存性注入の設定（後で実装）
+# 依存性注入の設定
 def get_upload_use_case() -> UploadLogFileUseCase:
-    # TODO: DIコンテナから取得
-    pass
+    from ...infrastructure.repositories.mock_log_file_repository import MockLogFileRepository
+    repository = MockLogFileRepository()
+    return UploadLogFileUseCase(repository)
 
 
 # ルーターの設定
