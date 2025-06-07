@@ -1,0 +1,15 @@
+2024-01-15 09:23:45 INFO GET /api/users 200 45ms
+2024-01-15 09:24:12 INFO POST /api/login 200 123ms
+2024-01-15 09:24:33 ERROR GET /api/data 500 234ms Database connection failed
+2024-01-15 09:25:01 INFO GET /api/users 200 38ms
+2024-01-15 09:25:15 WARNING GET /api/reports 404 12ms Resource not found
+2024-01-15 09:25:32 INFO DELETE /api/users/123 200 67ms
+2024-01-15 09:26:03 ERROR POST /api/data 500 145ms Database connection failed
+2024-01-15 09:26:45 INFO GET /api/status 200 15ms
+2024-01-15 09:27:12 INFO GET /api/users 200 42ms
+2024-01-15 09:27:33 ERROR GET /api/reports 500 234ms Internal server error
+2024-01-15 09:28:01 INFO POST /api/logout 200 89ms
+2024-01-15 09:28:22 WARNING GET /api/admin 403 8ms Access denied
+2024-01-15 09:28:45 INFO GET /api/users 200 35ms
+2024-01-15 09:29:12 ERROR POST /api/upload 500 456ms File upload failed
+2024-01-15 09:29:33 INFO GET /api/status 200 18ms
